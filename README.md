@@ -43,6 +43,7 @@ Base SQLite : `%APPDATA%\ComptaSyscohada\compta.db` (menu *Fichier > Sauvegarder
   ajuste le compte 311 au stock réel valorisé au CMUP et solde 6031.
 - Le bilan est **cumulé** à la date de fin de période ; le résultat n'est pas clôturé (pas d'écriture de
   clôture / report à nouveau automatique).
+- **Verrou de date** : aucune saisie (écriture, facture, règlement, mouvement de stock) n'est acceptée après le 31/12/2026 (constante `DATE_LIMITE` dans `compta/db.py`).
 - Pas encore : avoirs, immobilisations et amortissements, paie, multi-sociétés, impression PDF, utilisateurs.
 - Les factures ne sont pas supprimables (piste d'audit) ; seules les saisies manuelles le sont.
 - Les états sont des états de gestion : vérifiez avec votre expert-comptable avant dépôt officiel

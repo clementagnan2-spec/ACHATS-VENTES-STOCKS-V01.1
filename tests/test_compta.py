@@ -57,6 +57,23 @@ class TestCompta(unittest.TestCase):
         gl = reports.grand_livre(self.db, "2026-01-01", "2026-12-31", "411")
         self.assertEqual(gl[0]["solde"], 40800)
 
+    def test_aucune_saisie_apres_31_12_2026(self):
+        ok = [("521", 100, 0, None), ("101", 0, 100, None)]
+        self.db.post_entry("31/12/2026", "OD", "limite autorisée", ok)
+        with self.assertRaises(ComptaError):
+            self.db.post_entry("01/01/2027", "OD", "trop tard", ok)
+        with self.assertRaises(ComptaError):
+            self.db.create_facture("A", "01/01/2027", self.fou, [(self.art, 1, 1000, 18)])
+        with self.assertRaises(ComptaError):
+            self.db.reglement("15/02/2027", self.cli, 1000, "571")
+        with self.assertRaises(ComptaError):
+            self.db.mouvement_stock("01/01/2027", self.art, "E", 5)
+        with self.assertRaises(ComptaError):
+            self.db.generer_variation_stock("31/12/2027")
+        # rien n'a été enregistré en 2027
+        self.assertEqual(self.db.journal("2027-01-01", None), [])
+        self.assertEqual(self.db.articles_list()[0]["qte"], 0)
+
     def test_suppression_piece_facture_interdite(self):
         self.db.create_facture("A", "05/01/2026", self.fou, [(self.art, 1, 1000, 18)])
         with self.assertRaises(ComptaError):

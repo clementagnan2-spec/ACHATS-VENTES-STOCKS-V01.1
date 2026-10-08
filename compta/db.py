@@ -27,6 +27,9 @@ C_STOCK = "311"
 C_VAR_STOCK = "6031"
 
 
+DATE_LIMITE = "2026-12-31"  # aucune saisie autorisée après cette date
+
+
 class ComptaError(Exception):
     """Erreur fonctionnelle affichable à l'utilisateur."""
 
@@ -70,6 +73,13 @@ def parse_amount(s, default=0.0):
         return float(s)
     except ValueError:
         raise ComptaError(f"Nombre invalide : « {s} ».")
+
+
+def verifier_date(iso):
+    """Refuse toute saisie datée après DATE_LIMITE."""
+    if iso > DATE_LIMITE:
+        raise ComptaError(f"Saisie impossible : la date {fmt_date(iso)} est postérieure au "
+                          f"{fmt_date(DATE_LIMITE)}. Aucune saisie n'est autorisée après cette date.")
 
 
 def default_path():
@@ -251,6 +261,7 @@ class Compta:
         return f"{pat}{n + 1:05d}"
 
     def _insert_entry(self, iso_date, journal, piece, libelle, lines):
+        verifier_date(iso_date)
         lines = [(str(c).strip(), rnd(d or 0), rnd(cr or 0), t) for c, d, cr, t in lines]
         if len(lines) < 2:
             raise ComptaError("Une écriture comporte au moins deux lignes.")
@@ -338,6 +349,7 @@ class Compta:
 
     def reglement(self, date_, tiers_id, montant, tresor, libelle=""):
         iso = parse_date(date_)
+        verifier_date(iso)
         with self.cx:
             return self._reglement(iso, tiers_id, montant, tresor, libelle)
 
@@ -359,6 +371,7 @@ class Compta:
     def mouvement_stock(self, date_, art_id, sens, qte, cout=None, motif=""):
         """sens : 'E' entrée, 'S' sortie, 'I' inventaire (qte = quantité comptée)."""
         iso = parse_date(date_)
+        verifier_date(iso)
         art = self.article(art_id)
         if not art["stockable"]:
             raise ComptaError("Cet article n'est pas géré en stock.")
@@ -388,6 +401,7 @@ class Compta:
         """Inventaire intermittent SYSCOHADA : ajuste le compte 31 au stock réel valorisé au CMUP
         et constate la variation de stocks (6031). Retourne la pièce ou None si aucun écart."""
         iso = parse_date(date_)
+        verifier_date(iso)
         valeur = self.valeur_stock()
         r = self.cx.execute("SELECT COALESCE(SUM(debit-credit),0) FROM ecritures "
                             "WHERE compte LIKE '31%' AND date<=?", (iso,)).fetchone()
@@ -408,6 +422,7 @@ class Compta:
         """kind 'A' achat / 'V' vente ; lignes [(article_id, qte, pu, tva%)] ;
         reglement None (à crédit), '571' (caisse) ou '521' (banque)."""
         iso = parse_date(date_)
+        verifier_date(iso)
         if kind not in ("A", "V"):
             raise ComptaError("Type de facture invalide.")
         if not lignes:
