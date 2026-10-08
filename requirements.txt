@@ -1,3 +1,4 @@
 # Aucune dépendance d'exécution (Python standard : tkinter + sqlite3).
 # Compilation uniquement :
 pyinstaller
+pillow
