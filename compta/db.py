@@ -6,7 +6,8 @@ from datetime import date, datetime
 
 from .plan import PLAN
 
-VERSION = "0.1"
+APP_NAME = "ACHATS-VENTES-STOCKS-V01.1"
+VERSION = "01.1"
 
 JOURNAUX = {
     "AC": "Achats",

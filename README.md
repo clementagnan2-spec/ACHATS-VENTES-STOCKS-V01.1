@@ -1,4 +1,6 @@
-# Compta SYSCOHADA v0.1
+# ACHATS-VENTES-STOCKS-V01.1
+
+Logiciel gratuit pour les étudiants. Version réseau et professionnelle : consultanter280@gmail.com.
 
 Logiciel de comptabilité pour Windows (Python + Tkinter + SQLite), conforme au plan comptable
 SYSCOHADA révisé. Aucune dépendance : un seul fichier `.exe`.
@@ -17,19 +19,19 @@ SYSCOHADA révisé. Aucune dépendance : un seul fichier `.exe`.
 ## Obtenir le .exe (GitHub Actions)
 1. Créez un dépôt GitHub et envoyez-y ce dossier :
    ```
-   git init && git add . && git commit -m "Compta SYSCOHADA v0.1"
+   git init && git add . && git commit -m "ACHATS-VENTES-STOCKS-V01.1"
    git branch -M main
    git remote add origin https://github.com/VOTRE_COMPTE/compta-syscohada.git
    git push -u origin main
    ```
 2. Onglet **Actions** : le workflow *Build Windows EXE* se lance (relancez-le avec *Run workflow* si besoin).
-3. Téléchargez `ComptaSyscohada.exe` dans les **Artifacts** de l'exécution.
+3. Téléchargez `ACHATS-VENTES-STOCKS-V01.1.exe` dans les **Artifacts** de l'exécution.
 4. Pour une version publique : `git tag v0.1.0 && git push origin v0.1.0` publie le `.exe` dans **Releases**.
 
 ## Lancer / compiler en local
 ```
 python main.py
-pip install pyinstaller && pyinstaller --onefile --windowed --name ComptaSyscohada main.py
+pip install pyinstaller && pyinstaller --onefile --windowed --icon assets/coin.ico --name ACHATS-VENTES-STOCKS-V01.1 main.py
 python -m unittest discover -s tests -v
 ```
 

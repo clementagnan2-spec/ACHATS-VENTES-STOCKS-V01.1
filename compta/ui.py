@@ -7,10 +7,13 @@ from functools import wraps
 from tkinter import filedialog, font as tkfont, messagebox, simpledialog, ttk
 
 from . import reports
-from .db import (C_BANQUE, C_CAISSE, JOURNAUX, VERSION, Compta, ComptaError, fmt_amount, fmt_date,
+from .icon_data import COIN_PNG
+from .db import (APP_NAME, C_BANQUE, C_CAISSE, JOURNAUX, Compta, ComptaError, fmt_amount, fmt_date,
                  parse_amount, parse_date, rnd)
 
-TITRE = "Compta SYSCOHADA"
+TITRE = APP_NAME
+BANDEAU = ("Ce logiciel est gratuit pour les étudiants. Pour la version réseau et professionnelle, "
+           "contactez consultanter280@gmail.com")
 
 
 def guard(fn):
@@ -702,7 +705,11 @@ class App(tk.Tk):
         self.geometry("1200x740")
         self.minsize(1000, 600)
         self._titre()
+        self._icon = tk.PhotoImage(data=COIN_PNG)
+        self.iconphoto(True, self._icon)
         self._menu()
+        tk.Label(self, text=BANDEAU, bg="#fff3c4", fg="#7a5200", font=("", 10, "bold"),
+                 pady=6, wraplength=1150).pack(fill="x")
         bar = ttk.Frame(self, padding=(8, 6))
         bar.pack(fill="x")
         y = date.today().year
@@ -728,7 +735,7 @@ class App(tk.Tk):
         self.refresh_all()
 
     def _titre(self):
-        self.title(f"{TITRE} v{VERSION} — {self.db.get_param('societe', 'Ma Société')}")
+        self.title(f"{TITRE} — {self.db.get_param('societe', 'Ma Société')}")
 
     def _menu(self):
         m = tk.Menu(self)
@@ -740,8 +747,8 @@ class App(tk.Tk):
         m.add_cascade(label="Fichier", menu=f)
         h = tk.Menu(m, tearoff=0)
         h.add_command(label="À propos", command=lambda: messagebox.showinfo(
-            TITRE, f"{TITRE} v{VERSION}\nComptabilité SYSCOHADA : saisie, achats, ventes, stocks,\n"
-                   f"journal, grand livre, balance, bilan, compte de résultat.\n\nBase : {self.db.path}"))
+            TITRE, f"{TITRE}\nComptabilité SYSCOHADA : saisie, achats, ventes, stocks,\n"
+                   f"journal, grand livre, balance, bilan, compte de résultat.\n\n{BANDEAU}\n\nBase : {self.db.path}"))
         m.add_cascade(label="Aide", menu=h)
         self.config(menu=m)
 
