@@ -1,0 +1,42 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Installer PyInstaller
+        run: python -m pip install --upgrade pip pyinstaller
+
+      - name: Tests du moteur comptable
+        run: python -m unittest discover -s tests -v
+
+      - name: Compiler l'exécutable
+        run: pyinstaller --noconfirm --onefile --windowed --name ComptaSyscohada main.py
+
+      - name: Publier l'exécutable (artefact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ComptaSyscohada-windows
+          path: dist/ComptaSyscohada.exe
+
+      - name: Publier dans les Releases (sur tag vX.Y.Z)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/ComptaSyscohada.exe
